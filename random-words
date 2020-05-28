@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# Random Word Generator
+# https://blog.webernetz.net/password-strengthentropy-characters-vs-words/
+
+function set_variables {
+	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/words
+	KEYSPACE=$(cat $ALL_NON_RANDOM_WORDS | wc -l)
+	NUM=$1
+	ENTROPY=$(entropy $KEYSPACE $NUM)
+}
+
+# Entropy is defined as log base 2 of Character set to the power of the length.
+# In this case, character set is the number of words available to select from and
+# the length is the number of pseudorandom words output.
+function entropy {
+	export WORDSET=$1
+	export WORDS=$2
+	python3 - <<- EOF
+	import math; import os;
+	r = math.log(int(os.environ['WORDSET']) ** int(os.environ['WORDS']), 2)
+	print(round(r, 2))
+	EOF
+}
+
+function generate {
+	X=0
+	WORDS=""
+	echo "$1 words pseudo-randomly selected from a keyspace of ${KEYSPACE} words:"
+
+	while [[ "$X" -lt "$1" ]]; do
+		random_number=$(od -N3 -An -i /dev/urandom)
+		random_number=$(($random_number % ${KEYSPACE}))
+		WORD=$(sed ${random_number}"q;d" $ALL_NON_RANDOM_WORDS | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+		WORDS="${WORDS} ${WORD}"
+		let "X = X + 1"
+	done
+	echo -e ${WORDS}
+	echo "Source of randomness is /dev/urandom."
+	echo "Total entropy of this passphrase is: ${ENTROPY}"
+}
+
+function main {
+	echo "How many words?"
+	read N
+	if [[ -z $N ]]; then
+		N=1
+	fi
+	set_variables $N
+	generate $N
+}
+
+main
