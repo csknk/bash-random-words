@@ -10,7 +10,10 @@ Generate a set of pseudo-random words.
 
 Issues
 ------
-The index value is computed by taking the remainder of the random number modulo the size of the keyspace (i.e. the number of words selected from). This will introduce a slight biasif the maximum random number % keyspace is not equal to the keyspace - 1.
+The index value is computed by taking the remainder of the random number modulo the size of the keyspace (i.e. the number of words selected from).
+
+This will introduce a bias if the maximum random number % keyspace is not equal to the keyspace - 1.
+
 
 @TODO: fix this. 
 
