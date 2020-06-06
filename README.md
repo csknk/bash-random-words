@@ -14,4 +14,9 @@ The index value used to select a word from the wordlist pseudo-randomly is compu
 
 This will introduce a bias if the maximum random number % keyspace is not equal to the keyspace - 1.
 
+References
+----------
+* [Modulo Bias, stack overflow][2]
+
 [1]: https://blog.webernetz.net/password-strengthentropy-characters-vs-words/
+[2]: https://stackoverflow.com/questions/10984974/why-do-people-say-there-is-modulo-bias-when-using-a-random-number-generator
