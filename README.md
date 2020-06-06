@@ -8,14 +8,10 @@ Generate a set of pseudo-random words.
 3. The entropy of the pseudo-random words is computed
 4. Results are output on stdout.
 
-Issues
-------
-The index value is computed by taking the remainder of the random number modulo the size of the keyspace (i.e. the number of words selected from).
+Correct for Modulo Bias
+-----------------------
+The index value used to select a word from the wordlist pseudo-randomly is computed by taking the remainder of the random number modulo the size of the keyspace (i.e. the number of words selected from).
 
 This will introduce a bias if the maximum random number % keyspace is not equal to the keyspace - 1.
 
-
-@TODO: fix this. 
-
-
-[1]: ihttps://blog.webernetz.net/password-strengthentropy-characters-vs-words/
+[1]: https://blog.webernetz.net/password-strengthentropy-characters-vs-words/
