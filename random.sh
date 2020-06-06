@@ -20,7 +20,6 @@ function set_n_bytes {
 	mod=$(( $upper - $lower + 1))
 	excess=$(( ($max_random % $mod) + 1 ))
 	max_allowed=$(( $max_random - $excess ))
-	#echo "excess = $excess"
 }
 
 function random_in_range {
@@ -48,14 +47,12 @@ function set_inputs {
 		upper=$2
 	fi
 	set_n_bytes $lower $upper
-	#echo "The objective is to output pseudorandom numbers in the range ${lower} to ${upper}, corrected for modulo bias."
 }
 
 
 function random_number_in_range {
 	set_inputs $1 $2
-	#random_in_range $lower $upper $excess
-	random_in_range $lower $upper $excess
+	random_in_range
 }
 
 function test_run {
