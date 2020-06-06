@@ -1,4 +1,29 @@
 #!/bin/bash
+#
+# Copyright 2020 David Egan
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http:#www.apache.org/licenses/LICENSE-2.0
+#
+# Random Number Within a Specific Range
+# -------------------------------------
+# To obtain a random number within a particular (inclusive) range within a Bash script:
+# * Source this file
+# * Run `random_number_in_range <lower bound> <upper bound>`
+# * The `$random_number` variable in your calling script will have an appropriate random number
+#
+# If you run `random_number_in_range` with no parameters, you will be prompted to enter a lower and upper
+# value.
+
+# The source of randomness is `/dev/urandom`.
+# You can change $RANDOM_SOURCE if necessary.
+#
+# -----------------------------------------------------------------------------------------------------------
+RANDOM_SOURCE="/dev/urandom"
+
 function set_n_bytes {
 	lower=$1
 	upper=$2
@@ -25,13 +50,13 @@ function set_n_bytes {
 function random_in_range {
 	if [[ $excess != 0 ]]; then
 		while (( 1 )); do
-			random_number=$(od -N${n_random_bytes} -An -i /dev/urandom)
+			random_number=$(od -N${n_random_bytes} -An -i ${RANDOM_SOURCE})
 			if (( $random_number <= $max_allowed )); then
 				break
 			fi
 		done
 	else
-		random_number=$(od -N${n_random_bytes} -An -i /dev/urandom)
+		random_number=$(od -N${n_random_bytes} -An -i ${RANDOM_SOURCE})
 	fi
 	random_number=$(( ($random_number % $mod) + $lower ))
 }

@@ -1,12 +1,27 @@
 #!/bin/bash
 #
+# Copyright 2020 David Egan
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http:#www.apache.org/licenses/LICENSE-2.0
+#
 # Random Word Generator
-# https://blog.webernetz.net/password-strengthentropy-characters-vs-words/
+# ---------------------
+# Select a number of words from a specific library using a random number.
+# The random number is sourced from `/dev/urandom` and corrected for modulo bias.
+# By default, the library used is `/usr/share/dict/cracklib-small` which should be available on Ubuntu.
+# -----------------------------------------------------------------------------------------------------------
 . random.sh
 
 function set_variables {
 	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/cracklib-small
-	KEYSPACE=$(grep -v '[^A-Za-z]' /usr/share/dict/cracklib-small | wc -l)
+	# sed -r '/[^[:alnum:]]/d'
+	KEYSPACE=$(sed -r '/[^A-Za-z]/d' ${ALL_NON_RANDOM_WORDS} | wc -l)
+	#KEYSPACE=$(sed -r '/[^[:alnum:]]/d' ${ALL_NON_RANDOM_WORDS} | wc -l)
+	#KEYSPACE=$(grep -v '[^A-Za-z]' ${ALL_NON_RANDOM_WORDS} | wc -l)
 	NUM=$1
 	ENTROPY=$(entropy $KEYSPACE $NUM)
 }
@@ -27,15 +42,13 @@ function entropy {
 function generate {
 	X=0
 	WORDS=""
-
 	while [[ "$X" -lt "$1" ]]; do
 		# Get a random number in the range [1..$KEYSPACE]
 		random_number_in_range 1 $KEYSPACE
-		
-		WORD=$(sed ${random_number}"q;d" $ALL_NON_RANDOM_WORDS | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
-		#WORD=$(grep -v '[^A-Za-z]' $ALL_NON_RANDOM_WORDS | grep -v [Åéö] | sed -e -n ${random_number}p | tr '[:upper:]' '[:lower:]')
+		WORD=$(sed -r '/[^A-Za-z]/d' $ALL_NON_RANDOM_WORDS | sed ${random_number}"q;d" | tr '[:upper:]' '[:lower:]')
 		WORDS="${WORDS} ${WORD}"
 		let "X = X + 1"
+		echo "${X}: ${WORD}"
 	done
 	echo ""
 	echo -e ${WORDS}
