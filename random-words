@@ -14,7 +14,9 @@
 # The random number is sourced from `/dev/urandom` and corrected for modulo bias.
 # By default, the library used is `/usr/share/dict/cracklib-small` which should be available on Ubuntu.
 # -----------------------------------------------------------------------------------------------------------
-. random.sh
+THIS=$(readlink -f ${BASH_SOURCE[0]})
+PROJECT_ROOT=$(dirname $THIS)
+. "${PROJECT_ROOT}"/random.sh
 
 function set_variables {
 	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/cracklib-small
