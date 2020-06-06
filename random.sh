@@ -1,5 +1,4 @@
 #!/bin/bash
-
 function set_n_bytes {
 	lower=$1
 	upper=$2
@@ -17,62 +16,54 @@ function set_n_bytes {
 		echo "Too big for this script"
 		exit 1
 	fi
+
+	mod=$(( $upper - $lower + 1))
+	excess=$(( ($max_random % $mod) + 1 ))
+	max_allowed=$(( $max_random - $excess ))
+	#echo "excess = $excess"
 }
 
 function random_in_range {
-	lower=$1
-	upper=$2
-	KEYSPACE=$(( $upper - $lower + 1))
-	n_random_bytes=$3
-	if (( $max_random % $upper + 1 == 0 )); then
-		random_number=$(od -N${n_random_bytes} -An -i /dev/urandom)
-		random_number=$(( $random_number % ${KEYSPACE} + $lower ))
-	else
-		excess=$(( ($max_random + 1) % ($upper + 1) ))
-		max_allowed=$(( $max_random - $excess ))
-#		echo "n_random_bytes = $n_random_bytes"
-#		echo "max_random = $max_random"
-#		echo "excess = $excess"
-#		echo "max_allowed = $max_allowed"
+	if [[ $excess != 0 ]]; then
 		while (( 1 )); do
 			random_number=$(od -N${n_random_bytes} -An -i /dev/urandom)
-			if (( $random_number < $max_allowed )); then
+			if (( $random_number <= $max_allowed )); then
 				break
 			fi
 		done
-		random_number=$(( $random_number % ${KEYSPACE} + $lower ))
+	else
+		random_number=$(od -N${n_random_bytes} -An -i /dev/urandom)
 	fi
+	random_number=$(( ($random_number % $mod) + $lower ))
 }
 
-echo "Enter lower (inclusive) bound:"
-read lower
-echo "Enter upper (inclusive) bound:"
-read upper
+function set_inputs {
+	if [[ $# -eq 0 ]]; then
+		echo "Enter lower (inclusive) bound:"
+		read lower
+		echo "Enter upper (inclusive) bound:"
+		read upper
+	else
+		lower=$1
+		upper=$2
+	fi
+	set_n_bytes $lower $upper
+	#echo "The objective is to output pseudorandom numbers in the range ${lower} to ${upper}, corrected for modulo bias."
+}
 
-echo "The objective is to output pseudorandom numbers in the range ${lower} to ${upper}."
-echo "Corrected for modulo bias."
 
-set_n_bytes $lower $upper
-count6=0
-count5=0
-count4=0
-count3=0
-count2=0
-count1=0
-for i in {1..60000}; do
-	random_in_range $lower $upper $n_random_bytes
-#	echo "random_number = $random_number"
-	[[ $random_number == 6 ]] && let "count6 = count6 + 1"
-	[[ $random_number == 5 ]] && let "count5 = count5 + 1"
-	[[ $random_number == 4 ]] && let "count4 = count4 + 1"
-	[[ $random_number == 3 ]] && let "count3 = count3 + 1"
-	[[ $random_number == 2 ]] && let "count2 = count2 + 1"
-	[[ $random_number == 1 ]] && let "count1 = count1 + 1"
-done
+function random_number_in_range {
+	set_inputs $1 $2
+	#random_in_range $lower $upper $excess
+	random_in_range $lower $upper $excess
+}
 
-echo "count 6: $count6"
-echo "count 5: $count5"
-echo "count 4: $count4"
-echo "count 3: $count3"
-echo "count 2: $count2"
-echo "count 1: $count1"
+function test_run {
+	. tests
+	set_inputs 1 6
+	test_diceroll
+	set_inputs 1 4
+	test_4_sided_diceroll
+}
+
+[[ $1 == "test" ]] && test_run

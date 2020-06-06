@@ -1,0 +1,65 @@
+#!/bin/bash
+
+function compute_p {
+	p=$(bc <<< "scale=4;$1/${runs}")
+}
+
+function test_diceroll {
+	count6=0
+	count5=0
+	count4=0
+	count3=0
+	count2=0
+	count1=0
+	total=0
+	runs=6000
+	for ((i=1;i<=runs;i++)); do
+		random_in_range $lower $upper $n_random_bytes
+		[[ $random_number == 6 ]] && let "count6 = count6 + 1"
+		[[ $random_number == 5 ]] && let "count5 = count5 + 1"
+		[[ $random_number == 4 ]] && let "count4 = count4 + 1"
+		[[ $random_number == 3 ]] && let "count3 = count3 + 1"
+		[[ $random_number == 2 ]] && let "count2 = count2 + 1"
+		[[ $random_number == 1 ]] && let "count1 = count1 + 1"
+	done
+
+	compute_p $count6
+	echo "count 6: $count6 p = ${p}"
+	compute_p $count5
+	echo "count 5: $count5 p = ${p}"
+	compute_p $count4
+	echo "count 4: $count4 p = ${p}"
+	compute_p $count3
+	echo "count 3: $count3 p = ${p}"
+	compute_p $count2
+	echo "count 2: $count2 p = ${p}"
+	compute_p $count1
+	echo "count 1: $count1 p = ${p}"
+	total=$(( $count1 + $count2 + $count3 + $count4 + $count5 + $count6 ))
+	echo "total: $total"
+}
+
+function test_4_sided_diceroll {
+	count4=0
+	count3=0
+	count2=0
+	count1=0
+	runs=1000
+	for ((i=1;i<=runs;i++)); do
+		random_in_range $lower $upper $n_random_bytes
+		[[ $random_number == 4 ]] && let "count4 = count4 + 1"
+		[[ $random_number == 3 ]] && let "count3 = count3 + 1"
+		[[ $random_number == 2 ]] && let "count2 = count2 + 1"
+		[[ $random_number == 1 ]] && let "count1 = count1 + 1"
+	done
+	compute_p $count4
+	echo "count 4: $count4 p = ${p}"
+	compute_p $count3
+	echo "count 3: $count3 p = ${p}"
+	compute_p $count2
+	echo "count 2: $count2 p = ${p}"
+	compute_p $count1
+	echo "count 1: $count1 p = ${p}"
+	total=$(( $count1 + $count2 + $count3 + $count4 ))
+}
+

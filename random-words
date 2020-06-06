@@ -2,11 +2,10 @@
 #
 # Random Word Generator
 # https://blog.webernetz.net/password-strengthentropy-characters-vs-words/
+. random.sh
 
 function set_variables {
-#	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/words
 	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/cracklib-small
-#	KEYSPACE=$(cat $ALL_NON_RANDOM_WORDS | wc -l)
 	KEYSPACE=$(grep -v '[^A-Za-z]' /usr/share/dict/cracklib-small | wc -l)
 	NUM=$1
 	ENTROPY=$(entropy $KEYSPACE $NUM)
@@ -28,20 +27,20 @@ function entropy {
 function generate {
 	X=0
 	WORDS=""
-	echo "$1 words pseudo-randomly selected from a keyspace of ${KEYSPACE} words:"
 
 	while [[ "$X" -lt "$1" ]]; do
-		echo "LINE processing ${X}"
-		random_number=$(od -N3 -An -i /dev/urandom)
-		random_number=$(($random_number % ${KEYSPACE}))
-		echo "Random number = ${random_number}"
-#		WORD=$(sed ${random_number}"q;d" $ALL_NON_RANDOM_WORDS | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
-		WORD=$(grep -v '[^A-Za-z]' $ALL_NON_RANDOM_WORDS | grep -v [Åéö] | sed -e -n ${random_number}p | tr '[:upper:]' '[:lower:]')
+		# Get a random number in the range [1..$KEYSPACE]
+		random_number_in_range 1 $KEYSPACE
+		
+		WORD=$(sed ${random_number}"q;d" $ALL_NON_RANDOM_WORDS | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+		#WORD=$(grep -v '[^A-Za-z]' $ALL_NON_RANDOM_WORDS | grep -v [Åéö] | sed -e -n ${random_number}p | tr '[:upper:]' '[:lower:]')
 		WORDS="${WORDS} ${WORD}"
 		let "X = X + 1"
 	done
+	echo ""
 	echo -e ${WORDS}
-	echo "Source of randomness is /dev/urandom."
+	echo ""
+	echo "$1 words pseudo-randomly selected from a keyspace of ${KEYSPACE} words."
 	echo "Total entropy of this passphrase is: ${ENTROPY}"
 }
 
