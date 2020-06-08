@@ -45,6 +45,7 @@ function set_n_bytes {
 	mod=$(( $upper - $lower + 1))
 	excess=$(( ($max_random % $mod) + 1 ))
 	max_allowed=$(( $max_random - $excess ))
+	echo "max allowed: ${max_allowed}"
 }
 
 function random_in_range {
