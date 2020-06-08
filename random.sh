@@ -23,21 +23,25 @@
 #
 # -----------------------------------------------------------------------------------------------------------
 RANDOM_SOURCE="/dev/urandom"
+ONE_BYTE_MAX=$(( (1 << 8) - 1 ))
+TWO_BYTE_MAX=$(( (1 << 16) - 1 ))
+THREE_BYTE_MAX=$(( (1 << 24) - 1 ))
+
 
 function set_n_bytes {
 	lower=$1
 	upper=$2
 	m=$(($upper - $lower + 1))
-	if (( $m < 255 )); then
+	if (( $m < $ONE_BYTE_MAX )); then
 		n_random_bytes=1
-		max_random=255
-	elif (( $m > 255 && $m < 65535 )); then
+		max_random=$ONE_BYTE_MAX
+	elif (( $m > $ONE_BYTE_MAX && $m < $TWO_BYTE_MAX )); then
 		n_random_bytes=2
-		max_random=65535
-	elif (( $m > 65535 && $m < 16777215 )); then
+		max_random=$TWO_BYTE_MAX
+	elif (( $m > $TWO_BYTE_MAX && $m < $THREE_BYTE_MAX )); then
 		n_random_bytes=3
-		max_random=16777215
-	elif (( $m >= 16777215 )); then
+		max_random=$THREE_BYTE_MAX
+	elif (( $m >= $THREE_BYTE_MAX )); then
 		echo "Too big for this script"
 		exit 1
 	fi
@@ -45,7 +49,6 @@ function set_n_bytes {
 	mod=$(( $upper - $lower + 1))
 	excess=$(( ($max_random % $mod) + 1 ))
 	max_allowed=$(( $max_random - $excess ))
-	echo "max allowed: ${max_allowed}"
 }
 
 function random_in_range {
