@@ -27,7 +27,6 @@ ONE_BYTE_MAX=$(( (1 << 8) - 1 ))
 TWO_BYTE_MAX=$(( (1 << 16) - 1 ))
 THREE_BYTE_MAX=$(( (1 << 24) - 1 ))
 
-
 function set_n_bytes {
 	lower=$1
 	upper=$2
