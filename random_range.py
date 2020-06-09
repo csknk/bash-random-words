@@ -50,6 +50,7 @@ class RandomInRange:
                 break
         return (data % self.m) + self.lower
 
+
 class RandomWords:
     """
     Class that builds a list of randomly-selected words.
@@ -69,6 +70,7 @@ class RandomWords:
         # Initialise a RandomInRange object
         self.r = RandomInRange(1, self.keyspace)
         self.make_list()
+        self.compute_entropy()
 
     def make_list(self, n=None):
         """
@@ -106,9 +108,15 @@ class RandomWords:
                     if line_number == target_line_number: break
         return line
 
+    def compute_entropy(self):
+        import math
+        r = math.log(self.keyspace ** self.n, 2)
+        self.entropy = round(r, 2)
+
     def print_words(self):
         for w in self.random_words:
             print(w)
+        print("Entropy: {}".format(self.entropy))
 
 def main():
     r = RandomWords(24)
