@@ -20,10 +20,7 @@ PROJECT_ROOT=$(dirname $THIS)
 
 function set_variables {
 	readonly ALL_NON_RANDOM_WORDS=/usr/share/dict/cracklib-small
-	# sed -r '/[^[:alnum:]]/d'
 	KEYSPACE=$(sed -r '/[^A-Za-z]/d' ${ALL_NON_RANDOM_WORDS} | wc -l)
-	#KEYSPACE=$(sed -r '/[^[:alnum:]]/d' ${ALL_NON_RANDOM_WORDS} | wc -l)
-	#KEYSPACE=$(grep -v '[^A-Za-z]' ${ALL_NON_RANDOM_WORDS} | wc -l)
 	NUM=$1
 	ENTROPY=$(entropy $KEYSPACE $NUM)
 }

@@ -62,6 +62,8 @@ class RandomWords:
         self.words = '/usr/share/dict/cracklib-small'
         # Number of lines in the wordlist file
         self.keyspace = sum(1 for line in open(self.words))
+        #self.keyspace = sum(1 for line in open('/usr/share/dict/cracklib-small') if allowed_chars.fullmatch(line.rstrip()))
+        
         # Initialise a RandomInRange object
         self.r = RandomInRange(1, self.keyspace)
         self.make_list()
