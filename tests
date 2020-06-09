@@ -63,3 +63,9 @@ function test_4_sided_diceroll {
 	total=$(( $count1 + $count2 + $count3 + $count4 ))
 }
 
+function manual_test {
+	for ((i=1;i<=runs;i++)); do
+		random_in_range $lower $upper $n_random_bytes
+		echo "${i}: ${random_number}"
+	done
+}
