@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
+import re
 from subprocess import check_output
 
 class RandomInRange:
@@ -60,9 +61,10 @@ class RandomWords:
         self.random_words = list()
         # The word list to select from (Ubuntu/Debian)
         self.words = '/usr/share/dict/cracklib-small'
+        # Dictionary has many duplicate words with apostrophes - ignore by applying the following regex rule
+        self.allowed_chars = re.compile('[A-Za-z]+')
         # Number of lines in the wordlist file
-        self.keyspace = sum(1 for line in open(self.words))
-        #self.keyspace = sum(1 for line in open('/usr/share/dict/cracklib-small') if allowed_chars.fullmatch(line.rstrip()))
+        self.keyspace = sum(1 for line in open('/usr/share/dict/cracklib-small') if self.allowed_chars.fullmatch(line.rstrip()))
         
         # Initialise a RandomInRange object
         self.r = RandomInRange(1, self.keyspace)
@@ -77,12 +79,12 @@ class RandomWords:
         n = n if n else self.n
         for i in range(0, n):
             r_num = self.r.random_number()
-            self.random_words.append(self.get_one_line(r_num).decode('utf-8').rstrip())
+            self.random_words.append(self.get_one_line(r_num).rstrip())
 
-    def get_one_line(self, line_number):
+    def get_one_line_sed(self, line_number):
         """
         sed is a reasonable way to get a line from a file indexed by line number.
-        If there is a more Pythonic way of doing this, please leave a comment.
+        If this method is used, you need to decode the bytes object to a string.
         """
         return check_output([
             "sed",
@@ -90,6 +92,19 @@ class RandomWords:
             "%sp" % line_number,
             self.words
             ])
+
+    def get_one_line(self, target_line_number):
+        """
+        Loop through the dictionary file to get the target line number, disregarding lines that contain
+        anything other than the allowed character set.
+        """
+        with open(self.words) as fp:
+            line_number = 0
+            for line in fp:
+                if self.allowed_chars.fullmatch(line.rstrip()):
+                    line_number += 1
+                    if line_number == target_line_number: break
+        return line
 
     def print_words(self):
         for w in self.random_words:
