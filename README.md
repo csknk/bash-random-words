@@ -24,7 +24,13 @@ This project is for Ubuntu, which ships with a wordlist file `/usr/share/dict/cr
 
 I have ignored all lines in this file that do not contain characters `[A-Za-z]` in order to discount words with apostrophes and numbers. This still provides 49138 words.
 
-For a 24 word selection, this provides an entropy of 374.
+Entropy
+-------
+When calculating the entropy of a password or passphrase, entropy is defined as log₂ of the number of characters/words that the password has been randomly selected from to the power of the password/passphrase length.
+
+For a 24 word selection, this provides an entropy of 374:
+
+`log₂(49138<sup>24</sup>)`
 
 For a 12 word passphrase, entropy is 187.
 

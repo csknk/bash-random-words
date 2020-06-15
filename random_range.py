@@ -128,5 +128,4 @@ if __name__ == '__main__':
     parser.add_argument("n", help="The number of random words to generate", type=int, nargs='?', default=None)
     n = parser.parse_args().n
     n = n if n is not None else int(input("Enter n: "))
-        
     main(n)
