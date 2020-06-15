@@ -2,6 +2,7 @@
 import sys
 import os
 import re
+import argparse
 from subprocess import check_output
 
 class RandomInRange:
@@ -65,7 +66,7 @@ class RandomWords:
         # Dictionary has many duplicate words with apostrophes - ignore by applying the following regex rule
         self.allowed_chars = re.compile('[A-Za-z]+')
         # Number of lines in the wordlist file
-        self.keyspace = sum(1 for line in open('/usr/share/dict/cracklib-small') if self.allowed_chars.fullmatch(line.rstrip()))
+        self.keyspace = sum(1 for line in open(self.words) if self.allowed_chars.fullmatch(line.rstrip()))
         
         # Initialise a RandomInRange object
         self.r = RandomInRange(1, self.keyspace)
@@ -118,9 +119,14 @@ class RandomWords:
             print(w)
         print("Entropy: {}".format(self.entropy))
 
-def main():
-    r = RandomWords(24)
+def main(n):
+    r = RandomWords(n)
     r.print_words()
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("n", help="The number of random words to generate", type=int, nargs='?', default=None)
+    n = parser.parse_args().n
+    n = n if n is not None else int(input("Enter n: "))
+        
+    main(n)
