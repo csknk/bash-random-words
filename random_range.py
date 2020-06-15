@@ -115,8 +115,8 @@ class RandomWords:
         self.entropy = round(r, 2)
 
     def print_words(self):
-        for w in self.random_words:
-            print(w)
+        for i, w in enumerate(self.random_words, start=1):
+            print("{}:\t{}".format(i, w))
         print("Entropy: {}".format(self.entropy))
 
 def main(n):
